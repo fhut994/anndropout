@@ -18,77 +18,73 @@ package hayesroth;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 
 import org.neuroph.core.Layer;
 import org.neuroph.core.NeuralNetwork;
 import org.neuroph.core.Neuron;
-import org.neuroph.core.Weight;
 import org.neuroph.core.events.LearningEvent;
 import org.neuroph.core.events.LearningEventListener;
-import org.neuroph.core.learning.DataSet;
-import org.neuroph.core.learning.DataSetRow;
+import org.neuroph.core.data.DataSet;
+import org.neuroph.core.data.DataSetRow;
 import org.neuroph.core.learning.LearningRule;
 import org.neuroph.nnet.MultiLayerPerceptron;
 import org.neuroph.nnet.learning.MomentumBackpropagation;
 import org.neuroph.util.TrainingSetImport;
 import org.neuroph.util.TransferFunctionType;
 
+import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+
 /**
  *
  * @author Ivana Lukic
  */
 
-public class HayesRoth implements LearningEventListener {
-    static double _randFactor;
+
+public class HayesRoth  {
 
     /**
      * @param args the command line arguments
      */
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
 
-        String trainingSetFileName = "HayesRoth.txt";
-        int inputsCount = 16;
-        int outputsCount = 3;
+        double momentum = 0.6;
+        int numTrials = 10;
+        double dropOut = 0.0;
 
-        System.out.println("Running Sample");
-        System.out.println("Using training set " + trainingSetFileName);
+        System.out.println("After a total of " + numTrials + " trials each");
+        System.out.println("Average iterations taken to converge to 0.01 error (momentum = " + momentum + "):");
 
-        // create training set
-        DataSet trainingSet = null;
-        try {
-            trainingSet = TrainingSetImport.importFromFile(trainingSetFileName, inputsCount, outputsCount, ",");
-        } catch (FileNotFoundException ex) {
-            System.out.println("File not found!");
-        } catch (IOException ex) {
-            System.out.println("Error reading file or bad number format!");
+
+        while (dropOut < 1.0) {
+            int iterations = 0;
+            ArrayList<Future<Integer>> trials = new ArrayList<Future<Integer>>();
+            ExecutorService es = Executors.newFixedThreadPool(10);
+            for (int i = 0; i < numTrials; i++) {
+
+                Future<Integer> trial = es.submit(new Trial(dropOut, momentum));
+                trials.add(trial);
+
+            }
+            for (int i = 0; i < numTrials; i++) {
+                iterations += trials.get(i).get();
+            }
+            es.shutdown();
+
+            iterations /= numTrials;
+            System.out.println("DropOut " + dropOut*100 + "%: " + iterations);
+            dropOut += 0.01;
         }
 
 
-        // create multi layer perceptron
-        System.out.println("Creating neural network");
-        MultiLayerPerceptron neuralNet = new MultiLayerPerceptron(TransferFunctionType.SIGMOID, 16, 20, 3);
-
-        // set learning parametars
-        MomentumBackpropagation learningRule = (MomentumBackpropagation) neuralNet.getLearningRule();
-        learningRule.setLearningRate(0.2);
-        learningRule.setMomentum(0.7);
-        learningRule.setMaxError(0.01);
-        _randFactor = 0.9;
-
-        HayesRoth eventHandle = new HayesRoth();
-        learningRule.addListener(eventHandle);
-
-        // learn the training set
-        System.out.println("Training neural network...");
-        neuralNet.learn(trainingSet);
-        System.out.println("Done!");
-
-        // test perceptron
-        System.out.println("Testing trained neural network");
-        testHayesRoth(neuralNet, trainingSet);
 
     }
+
 
     public static void testHayesRoth(NeuralNetwork nnet, DataSet dset) {
 
@@ -100,26 +96,6 @@ public class HayesRoth implements LearningEventListener {
             System.out.print("Input: " + Arrays.toString(trainingElement.getInput()));
             System.out.print("Expected: " + Arrays.toString(trainingElement.getDesiredOutput()));
             System.out.println(" Output: " + Arrays.toString(networkOutput));
-        }
-
-    }
-
-    public void handleLearningEvent(LearningEvent l) {
-        MomentumBackpropagation rule = (MomentumBackpropagation)l.getSource();
-        Layer[] layers = rule.getNeuralNetwork().getLayers();
-        Layer hiddenLayer = layers[1];
-
-        // On each presentation of each training case, each hidden unit is randomly omitted from the network with a probability of 0.5
-        // From: http://arxiv.org/pdf/1207.0580.pdf
-
-
-        //System.out.println("i lernd " + rule.getCurrentIteration() + " " + Arrays.toString(hiddenLayer.getNeuronAt(0).getWeights()));
-
-        for (Neuron n : hiddenLayer.getNeurons()) {
-            if (Math.random() > _randFactor) {
-                for (Weight w : n.getWeights())
-                    w.setValue(0.0);
-            }
         }
 
     }
