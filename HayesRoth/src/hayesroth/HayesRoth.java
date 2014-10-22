@@ -62,23 +62,29 @@ public class HayesRoth  {
 
 
         while (dropOut < 1.0) {
-            int iterations = 0;
-            ArrayList<Future<Integer>> trials = new ArrayList<Future<Integer>>();
+            int avgIterations = 0;
+            double avgError = 0.0;
+
+            ArrayList<Future<LearningRule>> trials = new ArrayList<Future<LearningRule>>();
             ExecutorService es = Executors.newFixedThreadPool(10);
             for (int i = 0; i < numTrials; i++) {
 
-                Future<Integer> trial = es.submit(new Trial(dropOut, momentum));
+                Future<LearningRule> trial = es.submit(new Trial(dropOut, momentum));
                 trials.add(trial);
 
             }
             for (int i = 0; i < numTrials; i++) {
-                iterations += trials.get(i).get();
+                MomentumBackpropagation r = (MomentumBackpropagation)trials.get(i).get();
+                avgIterations += r.getCurrentIteration();
+                avgError += r.getTotalNetworkError();
+                //iterations += trials.get(i).get();
             }
             es.shutdown();
 
-            iterations /= numTrials;
-            System.out.println("DropOut " + dropOut*100 + "%: " + iterations);
-            dropOut += 0.01;
+            avgIterations /= numTrials;
+            avgError /= numTrials;
+            System.out.println("DropOut " + dropOut*100 + "%: " + avgIterations + " iterations, average error " + avgError);
+            dropOut += 0.05;
         }
 
 
@@ -99,4 +105,5 @@ public class HayesRoth  {
         }
 
     }
+
 }

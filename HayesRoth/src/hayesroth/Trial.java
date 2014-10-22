@@ -1,8 +1,10 @@
 package hayesroth;
 
 import org.neuroph.core.Layer;
+import org.neuroph.core.NeuralNetwork;
 import org.neuroph.core.Neuron;
 import org.neuroph.core.data.DataSet;
+import org.neuroph.core.learning.LearningRule;
 import org.neuroph.nnet.MultiLayerPerceptron;
 import org.neuroph.nnet.learning.MomentumBackpropagation;
 import org.neuroph.util.TrainingSetImport;
@@ -15,7 +17,7 @@ import java.util.concurrent.Callable;
 /**
  * Created by swit012 on 22/10/2014.
  */
-public class Trial implements Callable<Integer> {
+public class Trial implements Callable<LearningRule> {
 
     public double dropOut;
     public double momentum;
@@ -26,10 +28,16 @@ public class Trial implements Callable<Integer> {
     }
 
 
-    public Integer call() {
+    public LearningRule call() {
         String trainingSetFileName = "HayesRoth.txt";
         int inputsCount = 16;
+        int hiddenLayers = 20;
         int outputsCount = 3;
+
+//        String trainingSetFileName = "NormalisedWinesDataSet.txt";
+//        int inputsCount = 13;
+//        int hiddenLayers = 21;
+//        int outputsCount = 3;
 
         // create training set
         DataSet trainingSet = null;
@@ -45,7 +53,7 @@ public class Trial implements Callable<Integer> {
 
         // create multi layer perceptron
         //System.out.println("Creating neural network");
-        MultiLayerPerceptron neuralNet = new MultiLayerPerceptron(TransferFunctionType.SIGMOID, 16, 20, 3);
+        MultiLayerPerceptron neuralNet = new MultiLayerPerceptron(TransferFunctionType.SIGMOID, inputsCount, hiddenLayers, outputsCount);
         // set learning parametars
         MomentumBackpropagation learningRule = (MomentumBackpropagation) neuralNet.getLearningRule();
         learningRule.setLearningRate(0.3);
@@ -64,7 +72,9 @@ public class Trial implements Callable<Integer> {
         }
         neuralNet.learn(trainingSet);
 
+
         System.out.print(".");
-        return learningRule.getCurrentIteration();
+        //learningRule.getMaxError();
+        return learningRule;
     }
 }

@@ -1,0 +1,30 @@
+// Dropout running on 35 hidden neurons with the Hayes Roth dataset.
+After a total of 10 trials each
+Average iterations taken to converge to 0.01 error (momentum = 0.6):
+SLF4J: Failed to load class "org.slf4j.impl.StaticLoggerBinder".
+SLF4J: Defaulting to no-operation (NOP) logger implementation
+SLF4J: See http://www.slf4j.org/codes.html#StaticLoggerBinder for further details.
+..........DropOut 0.0%: 11235 iterations, average error 0.009905394245975894
+..........DropOut 5.0%: 4763 iterations, average error 0.009377646028237516
+..........DropOut 10.0%: 4331 iterations, average error 0.009176757049422841
+..........DropOut 15.000000000000002%: 3181 iterations, average error 0.009324954464938794
+..........DropOut 20.0%: 3193 iterations, average error 0.009625301236242435
+..........DropOut 25.0%: 3379 iterations, average error 0.009200565622082994
+..........DropOut 30.0%: 3986 iterations, average error 0.008467546223404022
+
+// Dropout running on 20 hidden neurons with the Hayes Roth dataset
+"C:\Program Files\Java\jdk1.7.0_67\bin\java" -Didea.launcher.port=7539 "-Didea.launcher.bin.path=C:\Program Files (x86)\JetBrains\IntelliJ IDEA Community Edition 13.1.2\bin" -Dfile.encoding=UTF-8 -classpath "C:\Program Files\Java\jdk1.7.0_67\jre\lib\charsets.jar;C:\Program Files\Java\jdk1.7.0_67\jre\lib\deploy.jar;C:\Program Files\Java\jdk1.7.0_67\jre\lib\javaws.jar;C:\Program Files\Java\jdk1.7.0_67\jre\lib\jce.jar;C:\Program Files\Java\jdk1.7.0_67\jre\lib\jfr.jar;C:\Program Files\Java\jdk1.7.0_67\jre\lib\jfxrt.jar;C:\Program Files\Java\jdk1.7.0_67\jre\lib\jsse.jar;C:\Program Files\Java\jdk1.7.0_67\jre\lib\management-agent.jar;C:\Program Files\Java\jdk1.7.0_67\jre\lib\plugin.jar;C:\Program Files\Java\jdk1.7.0_67\jre\lib\resources.jar;C:\Program Files\Java\jdk1.7.0_67\jre\lib\rt.jar;C:\Program Files\Java\jdk1.7.0_67\jre\lib\ext\access-bridge-64.jar;C:\Program Files\Java\jdk1.7.0_67\jre\lib\ext\dnsns.jar;C:\Program Files\Java\jdk1.7.0_67\jre\lib\ext\jaccess.jar;C:\Program Files\Java\jdk1.7.0_67\jre\lib\ext\localedata.jar;C:\Program Files\Java\jdk1.7.0_67\jre\lib\ext\sunec.jar;C:\Program Files\Java\jdk1.7.0_67\jre\lib\ext\sunjce_provider.jar;C:\Program Files\Java\jdk1.7.0_67\jre\lib\ext\sunmscapi.jar;C:\Program Files\Java\jdk1.7.0_67\jre\lib\ext\zipfs.jar;C:\Users\Frederick\Documents\Repository\trunk\HayesRoth\out\production\HayesRoth;C:\Program Files\neurophstudio\neurophstudio\modules\ext\neuroph-core-2.9.jar;C:\Program Files\neurophstudio\neurophstudio\modules\ext\slf4j-api-1.7.5.jar;C:\Program Files (x86)\JetBrains\IntelliJ IDEA Community Edition 13.1.2\lib\idea_rt.jar" com.intellij.rt.execution.application.AppMain hayesroth.HayesRoth
+After a total of 10 trials each
+Average iterations taken to converge to 0.01 error (momentum = 0.6):
+SLF4J: Failed to load class "org.slf4j.impl.StaticLoggerBinder".
+SLF4J: Defaulting to no-operation (NOP) logger implementation
+SLF4J: See http://www.slf4j.org/codes.html#StaticLoggerBinder for further details.
+..........DropOut 0.0%: 8092 iterations, average error 0.009913987125223424
+..........DropOut 5.0%: 6211 iterations, average error 0.009442587907321855
+..........DropOut 10.0%: 2906 iterations, average error 0.009147553511354954
+..........DropOut 15.000000000000002%: 3356 iterations, average error 0.009262831194632793
+..........DropOut 20.0%: 3832 iterations, average error 0.009080326508585854
+..........DropOut 25.0%: 5038 iterations, average error 0.008939774311488347
+..........DropOut 30.0%: 6982 iterations, average error 0.008550206610568137
+
+// Dropout running on 
