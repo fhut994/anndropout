@@ -1,18 +1,3 @@
-/**
- * Copyright 2012 Neuroph Project http://neuroph.sourceforge.net
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *    http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 
 package hayesroth;
 
@@ -39,10 +24,13 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import org.slf4j.Logger;
 
 /**
  *
- * @author Ivana Lukic
+ * @author Freddy Hutchinson
+ * Group: fhut994/vnai522/jcur884
+ * 
  */
 
 
@@ -52,58 +40,56 @@ public class HayesRoth  {
      * @param args the command line arguments
      */
     public static void main(String[] args) throws Exception {
-
         double momentum = 0.6;
         int numTrials = 10;
         double dropOut = 0.0;
 
-        System.out.println("After a total of " + numTrials + " trials each");
-        System.out.println("Average iterations taken to converge to 0.01 error (momentum = " + momentum + "):");
+        // force logger to rear its ugly head
+        MultiLayerPerceptron neuralNet = new MultiLayerPerceptron(TransferFunctionType.SIGMOID, 16, 30, 3);
 
+        System.out.println("Trials\tMomentum\tDropOut\tAvgIterations\tMaxIterations\tAvgTrainingError\tAvgTestError");
 
         while (dropOut < 1.0) {
-            int avgIterations = 0;
-            double avgError = 0.0;
-
-            ArrayList<Future<LearningRule>> trials = new ArrayList<Future<LearningRule>>();
+            int iterations = 0;
+            int maxIterations = Integer.MIN_VALUE;
+            double trainingError = 0;
+            double testingError = 0;
+            ArrayList<Future<Trial.TrialResult>> trials = new ArrayList<Future<Trial.TrialResult>>();
             ExecutorService es = Executors.newFixedThreadPool(10);
+
+            // map
             for (int i = 0; i < numTrials; i++) {
 
-                Future<LearningRule> trial = es.submit(new Trial(dropOut, momentum));
+                Future<Trial.TrialResult> trial = es.submit(new Trial(dropOut, momentum));
                 trials.add(trial);
 
             }
+
+            // reduce
             for (int i = 0; i < numTrials; i++) {
-                MomentumBackpropagation r = (MomentumBackpropagation)trials.get(i).get();
-                avgIterations += r.getCurrentIteration();
-                avgError += r.getTotalNetworkError();
-                //iterations += trials.get(i).get();
+                Trial.TrialResult res =trials.get(i).get();
+
+                if (res.Iterations > maxIterations)
+                {
+                    maxIterations = res.Iterations;
+                }
+                iterations += res.Iterations;
+                trainingError += res.TrainingError;
+                testingError += res.TestError;
             }
+
             es.shutdown();
 
-            avgIterations /= numTrials;
-            avgError /= numTrials;
-            System.out.println("DropOut " + dropOut*100 + "%: " + avgIterations + " iterations, average error " + avgError);
-            dropOut += 0.05;
+            // avg
+            iterations /= numTrials;
+            trainingError /= numTrials;
+            testingError /= numTrials;
+
+            System.out.println(numTrials + "\t" + momentum + "\t" + dropOut + "\t" + iterations + "\t" + maxIterations + "\t" + trainingError + "\t" + testingError);
+            dropOut += 0.01;
         }
 
 
 
     }
-
-
-    public static void testHayesRoth(NeuralNetwork nnet, DataSet dset) {
-
-        for (DataSetRow trainingElement : dset.getRows()) {
-
-            nnet.setInput(trainingElement.getInput());
-            nnet.calculate();
-            double[] networkOutput = nnet.getOutput();
-            System.out.print("Input: " + Arrays.toString(trainingElement.getInput()));
-            System.out.print("Expected: " + Arrays.toString(trainingElement.getDesiredOutput()));
-            System.out.println(" Output: " + Arrays.toString(networkOutput));
-        }
-
-    }
-
 }

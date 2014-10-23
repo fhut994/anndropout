@@ -3,6 +3,7 @@
     <CLASSES>
       <root url="jar://C:/Program Files/neurophstudio/neurophstudio/modules/ext/neuroph-core-2.9.jar!/" />
       <root url="jar://C:/Program Files/neurophstudio/neurophstudio/modules/ext/slf4j-api-1.7.5.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/slf4j-nop-1.7.7.jar!/" />
     </CLASSES>
     <JAVADOC />
     <SOURCES />
